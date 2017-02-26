@@ -50,6 +50,7 @@ Provides the base Defensec SELinux Security Policy package.
 %config(noreplace) %{_sysconfdir}/selinux/%1/contexts/dbus_contexts \
 %config(noreplace) %{_sysconfdir}/selinux/%1/contexts/default_contexts \
 %config(noreplace) %{_sysconfdir}/selinux/%1/contexts/openssh_contexts \
+%config(noreplace) %{_sysconfdir}/selinux/%1/contexts/x_contexts \
 %config(noreplace) %{_sysconfdir}/selinux/%1/contexts/default_type \
 %config(noreplace) %{_sysconfdir}/selinux/%1/contexts/failsafe_context \
 %config(noreplace) %{_sysconfdir}/selinux/%1/contexts/removable_context \
