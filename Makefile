@@ -76,6 +76,7 @@ install-config: $(POLICY_CONFIG_SOURCES)
 	$(INSTALL) -m0644 config/file_contexts.subs_dist $(DESTDIR)/$(SYSCONFDIR)/selinux/$(POLICY_NAME)/contexts/files/file_contexts.subs_dist
 	$(INSTALL) -m0644 config/media $(DESTDIR)/$(SYSCONFDIR)/selinux/$(POLICY_NAME)/contexts/files/media
 	$(INSTALL) -m0644 config/openssh_contexts $(DESTDIR)/$(SYSCONFDIR)/selinux/$(POLICY_NAME)/contexts/openssh_contexts
+	$(INSTALL) -m0644 config/x_contexts $(DESTDIR)/$(SYSCONFDIR)/selinux/$(POLICY_NAME)/contexts/x_contexts
 	$(INSTALL) -m0644 config/removable_context $(DESTDIR)/$(SYSCONFDIR)/selinux/$(POLICY_NAME)/contexts/removable_context
 	$(INSTALL) -m0644 config/securetty_types $(DESTDIR)/$(SYSCONFDIR)/selinux/$(POLICY_NAME)/contexts/securetty_types
 
