@@ -12,6 +12,13 @@ then
     exit
 fi
 
+__remove_rpmbuild_dir ()
+{
+    /bin/rm -rf ${HOME}/rpmbuild
+}
+
+trap '__remove_rpmbuild_dir' ERR
+
 __buildit ()
 {
     MINHEAD=`/bin/curl -s \
@@ -60,7 +67,7 @@ __devtree ()
         /bin/mv ${HOME}/rpmbuild/{RPMS/noarch/,SRPMS}/dssp2-*.rpm \
             ${HOME}/
 
-        /bin/rm -rf ${HOME}/rpmbuild
+        __remove_rpmbuild_dir
     else
 
         __buildit
