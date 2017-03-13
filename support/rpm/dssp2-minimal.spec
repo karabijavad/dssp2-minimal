@@ -109,7 +109,7 @@ SELINUXTYPE=dssp2-minimal
     restorecon /etc/selinux/config 2> /dev/null || :
 else
     . /etc/selinux/config
-    [ "${SELINUXTYPE}" == "dssp2-minimal" ] && selinuxenabled && load_policy
+    [ "${SELINUXTYPE}" == "dssp2-minimal" ] && selinuxenabled && semodule -B
 fi
 exit 0
 
