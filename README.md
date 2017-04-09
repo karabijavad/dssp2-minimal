@@ -55,6 +55,11 @@ Debian:
 	cp /lib/systemd/system/avahi-daemon.socket /etc/systemd/system/
 		sed -i 's/\/var\/run/\/run/' /etc/systemd/system/avahi-daemon.socket
 
+Xserver/Xwayland:
+
+    To avoid dumping of core:
+
+    cat /etc/selinux/dssp2-minimal/contexts/x_contexts > /etc/X11/xorg.conf.d/99-selinux.conf
 
 ## Getting started with Hello World!
 
