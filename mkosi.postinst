@@ -1,0 +1,29 @@
+#!/bin/sh -ex
+
+cp /etc/skel/.bash* /root/
+
+cp /usr/lib/tmpfiles.d/pam.conf /etc/tmpfiles.d/
+sed -i 's/\/var\/run/\/run/' /etc/tmpfiles.d/pam.conf
+
+cp /usr/lib/tmpfiles.d/libselinux.conf /etc/tmpfiles.d/
+sed -i 's/\/var\/run/\/run/' /etc/tmpfiles.d/libselinux.conf
+
+cat > /etc/selinux/config <<EOF
+SELINUX=permissive
+SELINUXTYPE=dssp2-minimal
+EOF
+
+echo "-F" >/.autorelabel
+
+systemctl enable systemd-resolved systemd-networkd
+
+ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+
+cat > /etc/systemd/network/ens3.network <<EOF
+[Match]
+Name=ens3
+[Network]
+DHCP=yes
+EOF
+
+sed -i 's/ignoredirs=\/root//' /etc/selinux/semanage.conf
