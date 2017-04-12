@@ -66,7 +66,7 @@ Notes on mkosi:
     The mkosi configuration enclosed relies on my mkosi fork at https://github.com/DefenSec/mkosi and on dssp2-standard on the host
 
     To create ./image.raw:
-        sudo mkosi --default `cat mkosi.default`
+        sudo mkosi
 
 ## Getting started with Hello World!
 
