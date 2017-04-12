@@ -61,6 +61,13 @@ Xserver/Xwayland:
 
     cat /etc/selinux/dssp2-minimal/contexts/x_contexts > /etc/X11/xorg.conf.d/99-selinux.conf
 
+Notes on mkosi:
+
+    The mkosi configuration enclosed relies on my mkosi fork at https://github.com/DefenSec/mkosi and on dssp2-standard on the host
+
+    To create ./image.raw:
+        sudo mkosi --default `cat mkosi.default`
+
 ## Getting started with Hello World!
 
     echo "Hello World! from: `id -Z`" > /usr/local/bin/helloworld.sh
