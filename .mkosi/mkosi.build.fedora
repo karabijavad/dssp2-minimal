@@ -1,0 +1,10 @@
+#!/bin/sh -ex
+
+make install-semodule
+
+mkdir -p $DESTDIR/etc
+
+cat > $DESTDIR/etc/issue <<EOF
+\S (built from dssp2-minimal tree)
+Kernel \r on an \m (\l)
+EOF

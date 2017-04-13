@@ -1,0 +1,24 @@
+#!/bin/sh -ex
+
+cp /etc/skel/.bash* /root/
+
+cp /lib/systemd/system/dbus.socket /etc/systemd/system/
+sed -i 's/\/var\/run/\/run/' /etc/systemd/system/dbus.socket
+
+cat > /etc/selinux/config <<EOF
+SELINUX=permissive
+SELINUXTYPE=dssp2-minimal
+EOF
+
+echo "-F" >/.autorelabel
+
+systemctl enable systemd-resolved systemd-networkd
+
+ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+
+cat > /etc/systemd/network/ens3.network <<EOF
+[Match]
+Name=ens3
+[Network]
+DHCP=yes
+EOF

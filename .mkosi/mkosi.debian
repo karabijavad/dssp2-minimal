@@ -1,6 +1,6 @@
 [Distribution]
-Distribution=fedora
-Release=26
+Distribution=debian
+Release=unstable
 
 [Output]
 Format=raw_gpt
@@ -10,9 +10,8 @@ Bootable=yes
 RootSize=3G
 
 [Packages]
-Cache=/var/tmp/dnf-cache
+Cache=/var/tmp/apt-cache
 Packages=
-    dnf
     git
     nano
     openssh-server
