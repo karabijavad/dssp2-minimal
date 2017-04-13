@@ -6,6 +6,9 @@
 /lib /usr/lib
 /usr/local/lib /usr/lib
 
+/lib32 /usr/lib
+/libx32 /usr/lib
+
 /lib64 /usr/lib
 /usr/lib64 /usr/lib
 /usr/local/lib64 /usr/lib
