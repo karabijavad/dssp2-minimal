@@ -65,8 +65,11 @@ Notes on mkosi:
 
     The mkosi configuration enclosed relies on my mkosi fork at https://github.com/DefenSec/mkosi and on dssp2-standard on the host
 
-    To create ./image.raw:
+    To create default ./image.raw:
         sudo mkosi
+
+    To create debian ./image.raw:
+        sudo /usr/local/sbin/mkosi --default .mkosi/mkosi.debian --postinst-script .mkosi/mkosi.postinst.debian --build-script .mkosi/mkosi.build.debian
 
 ## Getting started with Hello World!
 
