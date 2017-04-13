@@ -69,7 +69,7 @@ Notes on mkosi:
         sudo mkosi
 
     To create debian ./image.raw:
-        sudo /usr/local/sbin/mkosi --default .mkosi/mkosi.debian --postinst-script .mkosi/mkosi.postinst.debian --build-script .mkosi/mkosi.build.debian
+        sudo mkosi --default .mkosi/mkosi.debian --postinst-script .mkosi/mkosi.postinst.debian --build-script .mkosi/mkosi.build.debian
 
 ## Getting started with Hello World!
 
