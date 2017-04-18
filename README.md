@@ -55,15 +55,11 @@ Debian:
 	cp /lib/systemd/system/avahi-daemon.socket /etc/systemd/system/
 		sed -i 's/\/var\/run/\/run/' /etc/systemd/system/avahi-daemon.socket
 
-Xserver/Xwayland:
-
-    To avoid dumping of core:
+To avoid dumping of core with Xserver/Xwayland:
 
     cat /etc/selinux/dssp2-minimal/contexts/x_contexts > /etc/X11/xorg.conf.d/99-selinux.conf
 
-Notes on mkosi:
-
-    The mkosi configuration enclosed relies on my mkosi fork at https://github.com/DefenSec/mkosi and on dssp2-standard on the host
+The mkosi configuration enclosed relies on my mkosi fork at https://github.com/DefenSec/mkosi and on dssp2-standard on the host
 
     To create default ./image.raw:
         sudo mkosi
