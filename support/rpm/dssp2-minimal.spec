@@ -69,7 +69,6 @@ Provides the base Defensec SELinux Security Policy package.
 %{_sharedstatedir}/selinux/%1/active/seusers \
 %{_sharedstatedir}/selinux/%1/active/seusers.linked \
 %{_sharedstatedir}/selinux/%1/active/users_extra \
-%{_sharedstatedir}/selinux/%1/active/users_extra.linked \
 %dir %{_sysconfdir}/selinux/%1/contexts/users \
 %nil
 
