@@ -26,7 +26,7 @@ SELinux should be enabled in the Linux kernel, your file systems should support 
     cd dssp2-minimal
     make install-semodule
 	cat > /etc/selinux/config <<EOF
-    SELINUX=enforcing
+    SELINUX=permissive
     SELINUXTYPE=dssp2-minimal
     EOF
     echo "-F" > /.autorelabel
@@ -46,13 +46,13 @@ Fedora:
 
 Debian:
 
-	cp /usr/lib/tmpfiles.d/sshd.conf /etc/tmpfiles.d/
+	cp /usr/lib/tmpfiles.d/sshd.conf /etc/tmpfiles.d/ && \
 		sed -i 's/\/var\/run/\/run/' /etc/tmpfiles.d/sshd.conf
 
-	cp /lib/systemd/system/dbus.socket /etc/systemd/system/
+	cp /lib/systemd/system/dbus.socket /etc/systemd/system/ && \
 		sed -i 's/\/var\/run/\/run/' /etc/systemd/system/dbus.socket
 
-	cp /lib/systemd/system/avahi-daemon.socket /etc/systemd/system/
+	cp /lib/systemd/system/avahi-daemon.socket /etc/systemd/system/ && \
 		sed -i 's/\/var\/run/\/run/' /etc/systemd/system/avahi-daemon.socket
 
 To avoid dumping of core with Xserver/Xwayland:
