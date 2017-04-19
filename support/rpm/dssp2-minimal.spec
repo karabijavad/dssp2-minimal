@@ -62,11 +62,14 @@ Provides the base Defensec SELinux Security Policy package.
 %verify(not md5 size mtime) %{_sysconfdir}/selinux/%1/contexts/files/file_contexts.homedirs \
 %verify(not md5 size mtime) %{_sysconfdir}/selinux/%1/contexts/files/file_contexts.homedirs.bin \
 %{_sharedstatedir}/selinux/%1/active/commit_num \
-%{_sharedstatedir}/selinux/%1/active/users_extra \
-%{_sharedstatedir}/selinux/%1/active/homedir_template \
-%{_sharedstatedir}/selinux/%1/active/seusers \
 %{_sharedstatedir}/selinux/%1/active/file_contexts \
+%{_sharedstatedir}/selinux/%1/active/homedir_template \
+%{_sharedstatedir}/selinux/%1/active/policy.linked \
 %{_sharedstatedir}/selinux/%1/active/policy.kern \
+%{_sharedstatedir}/selinux/%1/active/seusers \
+%{_sharedstatedir}/selinux/%1/active/seusers.linked \
+%{_sharedstatedir}/selinux/%1/active/users_extra \
+%{_sharedstatedir}/selinux/%1/active/users_extra.linked \
 %dir %{_sysconfdir}/selinux/%1/contexts/users \
 %nil
 
