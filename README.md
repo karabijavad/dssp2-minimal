@@ -34,6 +34,8 @@ SELinux should be enabled in the Linux kernel, your file systems should support 
 
 ## Known issues
 
+Add checkreqprot=0 to kernel boot line to help prevent bypassing of SELinux memory protection
+
 Various `systemd` socket units and `systemd-tmpfiles` configuration snippets may refer to `/var/run` instead of `/run` and this causes them to create content with the wrong security context.
 
 Fedora:
