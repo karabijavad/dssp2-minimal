@@ -4,7 +4,7 @@
 ROOT_SALT=$(/bin/openssl rand -base64 15)
 WHEEL_SALT=$(/bin/openssl rand -base64 15)
 
-PATH_TO_FILES="$HOME"
+PATH_TO_FILES=$HOME
 
 rootpw()
 {
