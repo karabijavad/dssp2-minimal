@@ -4,6 +4,8 @@
 ROOT_SALT=$(/bin/openssl rand -base64 15)
 WHEEL_SALT=$(/bin/openssl rand -base64 15)
 
+PATH_TO_FILES="$HOME"
+
 rootpw()
 {
     /bin/python3 -c 'import crypt; print(crypt.crypt("'$1'", "$6$'$2'"))'
@@ -28,6 +30,7 @@ help()
 
     Optional parameters:
 
+    -U  : Path to files
     -Z  : Kickstart post-installation script to include
 
     Example: $0 -G myfedora \\
@@ -38,10 +41,7 @@ help()
             -R abc123 -I ${USER} -W abc123 -S 10
 
     Just a note to self:
-        /bin/tar -cf - ${HOME}/myfedora.raw | /bin/xz -T 0 -9 -c - > myfedora.raw.tar.xz
-
-    To use a path other than "${HOME}":
-        HOME=/my/path $0 ...
+        /bin/tar -cf - ${PATH_TO_FILES}/myfedora.raw | /bin/xz -T 0 -9 -c - > myfedora.raw.tar.xz
     "
 }
 
@@ -151,6 +151,17 @@ while [ $# -gt 0 ] ; do
             GUEST_IMG_SIZE="$1"
 
             ;;
+        -U )
+            shift
+
+            if [ $# -eq 0 ] ; then
+                printf "%s\n" "Path to files is missing"
+                exit
+            fi
+
+            PATH_TO_FILES="$1"
+
+            ;;
         -Z )
             shift
 
@@ -176,7 +187,7 @@ while [ $# -gt 0 ] ; do
     shift
 done
 
-/bin/cat > ${HOME}/quickqemuinstaller-${GUEST_NAME}-ks.cfg << EOF
+/bin/cat > ${PATH_TO_FILES}/quickqemuinstaller-${GUEST_NAME}-ks.cfg << EOF
 text
 auth --enableshadow --passalgo=sha512
 url --url=${OS_MEDIA_URL}
@@ -254,7 +265,7 @@ rm -r /root/anaconda-ks.cfg
 
 restorecon -RF /
 
-$([[ -n ${POSTINSTALL_SCRIPT} ]] && /bin/cat ${HOME}/${POSTINSTALL_SCRIPT})
+$([[ -n ${POSTINSTALL_SCRIPT} ]] && /bin/cat ${PATH_TO_FILES}/${POSTINSTALL_SCRIPT})
 
 %end
 EOF
@@ -304,7 +315,7 @@ if [ -z "$GUEST_IMG_SIZE" ] ; then
     exit
 fi
 
-FPASTE_KICKSTART_URL=$(printf "%s\n" "$(/bin/fpaste ${HOME}/quickqemuinstaller-${GUEST_NAME}-ks.cfg 2>/dev/null | /bin/tail -n 1 | /bin/awk -F " -> " '{ print $1 }')")
+FPASTE_KICKSTART_URL=$(printf "%s\n" "$(/bin/fpaste ${PATH_TO_FILES}/quickqemuinstaller-${GUEST_NAME}-ks.cfg 2>/dev/null | /bin/tail -n 1 | /bin/awk -F " -> " '{ print $1 }')")
 
 if [ -n "$FPASTE_KICKSTART_URL" ]
 then
@@ -316,8 +327,8 @@ fi
 
 INSTALL_MEDIA=$(basename ${INSTALL_MEDIA_URL})
 
-if [ ! -f ${HOME}/${INSTALL_MEDIA} ] ; then
-    /bin/wget -P ${HOME} ${INSTALL_MEDIA_URL}
+if [ ! -f ${PATH_TO_FILES}/${INSTALL_MEDIA} ] ; then
+    /bin/wget -P ${PATH_TO_FILES} ${INSTALL_MEDIA_URL}
 
     retval=`echo $?`
 
@@ -328,19 +339,19 @@ if [ ! -f ${HOME}/${INSTALL_MEDIA} ] ; then
     fi
 fi
 
-if [ -f ${HOME}/vmlinuz ] ; then
-    /bin/rm -f ${HOME}/vmlinuz
+if [ -f ${PATH_TO_FILES}/vmlinuz ] ; then
+    /bin/rm -f ${PATH_TO_FILES}/vmlinuz
 
     retval=`echo $?`
 
     if ! [[ "$retval" == "0" ]]
     then
-        echo "failed to remove ${HOME}/vmlinuz"
+        echo "failed to remove ${PATH_TO_FILES}/vmlinuz"
         exit 1
     fi
 fi
 
-/bin/wget -P ${HOME} ${VMLINUZ_MEDIA_URL}
+/bin/wget -P ${PATH_TO_FILES} ${VMLINUZ_MEDIA_URL}
 
 retval=`echo $?`
 
@@ -350,19 +361,19 @@ then
     exit 1
 fi
 
-if [ -f ${HOME}/initrd.img ] ; then
-    /bin/rm -f ${HOME}/initrd.img
+if [ -f ${PATH_TO_FILES}/initrd.img ] ; then
+    /bin/rm -f ${PATH_TO_FILES}/initrd.img
 
     retval=`echo $?`
 
     if ! [[ "$retval" == "0" ]]
     then
-        echo "failed to remove ${HOME}/initrd.img"
+        echo "failed to remove ${PATH_TO_FILES}/initrd.img"
         exit 1
     fi
 fi
 
-/bin/wget -P ${HOME} ${INITRD_MEDIA_URL}
+/bin/wget -P ${PATH_TO_FILES} ${INITRD_MEDIA_URL}
 
 retval=`echo $?`
 
@@ -372,19 +383,19 @@ then
     exit 1
 fi
 
-/bin/qemu-img create -f raw ${HOME}/${GUEST_NAME}.raw ${GUEST_IMG_SIZE}G
+/bin/qemu-img create -f raw ${PATH_TO_FILES}/${GUEST_NAME}.raw ${GUEST_IMG_SIZE}G
 
 retval=`echo $?`
 
 if ! [[ "$retval" == "0" ]]
 then
-    echo "failed to create ${HOME}/${GUEST_NAME}.raw"
+    echo "failed to create ${PATH_TO_FILES}/${GUEST_NAME}.raw"
     exit 1
 fi
 
 /bin/qemu-system-x86_64 -machine accel=kvm --enable-kvm --cdrom \
-    ${HOME}/${INSTALL_MEDIA} -boot d -drive file=${HOME}/${GUEST_NAME}.raw,driver=raw \
+    ${PATH_TO_FILES}/${INSTALL_MEDIA} -boot d -drive file=${PATH_TO_FILES}/${GUEST_NAME}.raw,driver=raw \
     -m 2056 -net nic,model=virtio -net user -name ${GUEST_NAME} -localtime -no-reboot -serial pty \
-    -kernel ${HOME}/vmlinuz -initrd ${HOME}/initrd.img \
+    -kernel ${PATH_TO_FILES}/vmlinuz -initrd ${PATH_TO_FILES}/initrd.img \
     -append "@root@ console=tty0 console=ttyS0,115200 serial rd_NO_PLYMOUTH ks=${KICKSTART_URL}" \
     -display none -daemonize
