@@ -1,0 +1,390 @@
+#!/bin/bash
+# -*- mode: shell-script; indent-tabs-mode: nil; sh-basic-offset: 4; -*-
+
+ROOT_SALT=$(/bin/openssl rand -base64 15)
+WHEEL_SALT=$(/bin/openssl rand -base64 15)
+
+rootpw()
+{
+    /bin/python3 -c 'import crypt; print(crypt.crypt("'$1'", "$6$'$2'"))'
+}
+
+help()
+{
+    echo "
+    This script performs Fedora base automated installation with Qemu.
+
+    Required parameters:
+
+    -G  : Guest name (ex. myfedora)
+    -M  : Install media URL (ex. http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Alpha/Everything/x86_64/iso/Fedora-Everything-netinst-x86_64-26-Alpha-1.7.iso)
+    -V  : VMLinuz media URL (ex. http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Alpha/Everything/x86_64/os/isolinux/vmlinuz)
+    -P  : InitRD media URL (ex. http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Alpha/Everything/x86_64/os/isolinux/initrd.img)
+    -O  : OS media URL (ex. http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Alpha/Everything/x86_64/os/)
+    -R  : Root password (ex. abc123)
+    -I  : Wheel user identity (ex. kcinimod)
+    -W  : Wheel user password (ex. abc123)
+    -S  : Guest image size in gigabytes (ex. 10)
+
+    Optional parameters:
+
+    -Z  : Kickstart post-installation script to include
+
+    Example: $0 -G myfedora \\
+            -M http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Alpha/Everything/x86_64/iso/Fedora-Everything-netinst-x86_64-26-Alpha-1.7.iso \\
+            -V http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Alpha/Everything/x86_64/os/isolinux/vmlinuz \\
+            -P http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Alpha/Everything/x86_64/os/isolinux/initrd.img \\
+            -O http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Alpha/Everything/x86_64/os/ \\
+            -R abc123 -I ${USER} -W abc123 -S 10
+
+    Just a note to self:
+        /bin/tar -cf - ${HOME}/myfedora.raw | /bin/xz -T 0 -9 -c - > myfedora.raw.tar.xz
+
+    To use a path other than "${HOME}":
+        HOME=/my/path $0 ...
+    "
+}
+
+if [ $# -eq 0 ] ; then
+    help
+    exit
+fi
+
+while [ $# -gt 0 ] ; do
+    case "$1" in
+        -G )
+            shift
+
+            if [ $# -eq 0 ] ; then
+                printf "%s\n" "Guest name is missing"
+                exit
+            fi
+
+            GUEST_NAME="$1"
+
+            ;;
+        -M )
+            shift
+
+            if [ $# -eq 0 ] ; then
+                printf "%s\n" "Install Media URL is missing"
+                exit
+            fi
+
+            INSTALL_MEDIA_URL="$1"
+
+            ;;
+        -V )
+            shift
+
+            if [ $# -eq 0 ] ; then
+                printf "%s\n" "VMLinuz Media URL is missing"
+                exit
+            fi
+
+            VMLINUZ_MEDIA_URL="$1"
+
+            ;;
+        -P )
+            shift
+
+            if [ $# -eq 0 ] ; then
+                printf "%s\n" "InitRD Media URL is missing"
+                exit
+            fi
+
+            INITRD_MEDIA_URL="$1"
+
+            ;;
+        -O )
+            shift
+
+            if [ $# -eq 0 ] ; then
+                printf "%s\n" "OS Media URL is missing"
+                exit
+            fi
+
+            OS_MEDIA_URL="$1"
+
+            ;;
+        -R )
+            shift
+
+            if [ $# -eq 0 ] ; then
+                printf "%s\n" "Root password is missing"
+                exit
+            fi
+
+            ROOT_PASSWD="$1"
+
+            ;;
+        -I )
+            shift
+
+            if [ $# -eq 0 ] ; then
+                printf "%s\n" "Wheel user identity is missing"
+                exit
+            fi
+
+            WHEEL_NAME="$1"
+
+            ;;
+        -W )
+            shift
+
+            if [ $# -eq 0 ] ; then
+                printf "%s\n" "Wheel user password is missing"
+                exit
+            fi
+
+            WHEEL_PASSWD="$1"
+
+            ;;
+        -S )
+            shift
+
+            if [ $# -eq 0 ] ; then
+                printf "%s\n" "Guest image size in gigabytes is missing"
+                exit
+            fi
+
+            GUEST_IMG_SIZE="$1"
+
+            ;;
+        -Z )
+            shift
+
+            if [ $# -eq 0 ] ; then
+                printf "%s\n" "Kickstart post-installation script to include is missing"
+                exit
+            fi
+
+            POSTINSTALL_SCRIPT="$1"
+
+            ;;
+        -* )
+            printf "%s\n" "switch $1 not supported"
+            exit
+
+            ;;
+        * )
+            printf "%s\n" "extra argument or missing switch"
+            exit
+
+            ;;
+        esac
+    shift
+done
+
+/bin/cat > ${HOME}/quickqemuinstaller-${GUEST_NAME}-ks.cfg << EOF
+text
+auth --enableshadow --passalgo=sha512
+url --url=${OS_MEDIA_URL}
+keyboard --vckeymap=us-euro --xlayouts=us
+lang en_US.UTF-8
+network  --bootproto=dhcp --device=eth0 --noipv6 --activate
+rootpw --iscrypted $(rootpw ${ROOT_PASSWD} ${ROOT_SALT})
+timezone Europe/Amsterdam --isUtc
+user --groups=wheel --name=${WHEEL_NAME} --password=$(rootpw ${WHEEL_PASSWD} ${WHEEL_SALT}) --iscrypted
+bootloader --location=mbr --append=$(printf "%s\n" "\"module.sig_enforce checkreqprot=0 console=tty0 console=ttyS0,115200 serial rd_NO_PLYMOUTH\"")
+autopart --nolvm
+clearpart --all --initlabel
+shutdown
+
+repo --name=dssp2 --install --baseurl=http://tfirg.undo.it/dssp2/
+
+%packages --ignoremissing --nocore
+basesystem
+install
+systemd
+fedora-release
+passwd
+kernel
+systemd-udev
+binutils
+qemu-guest-agent
+dssp2-minimal
+dnf
+less
+vim-minimal
+coreutils
+rootfiles
+setup
+shadow-utils
+util-linux
+hostname
+iproute
+filesystem
+sudo
+glibc
+bash
+openssh-server
+-selinux-policy
+-selinux-policy-target
+
+%end
+
+%post --log=/root/ks-error.log
+
+systemctl enable systemd-resolved systemd-networkd
+
+ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+
+cat > /etc/systemd/network/ens3.network <<OEF
+[Match]
+Name=ens3
+[Network]
+DHCP=yes
+OEF
+
+echo "module-store = direct" > /etc/selinux/semanage.conf
+echo "expand-check = 1" >> /etc/selinux/semanage.conf
+echo "usepasswd = false" >> /etc/selinux/semanage.conf
+
+cp /usr/lib/tmpfiles.d/pam.conf /etc/tmpfiles.d/
+sed -i 's/\/var\/run/\/run/' /etc/tmpfiles.d/pam.conf
+
+cp /usr/lib/tmpfiles.d/libselinux.conf /etc/tmpfiles.d/
+sed -i 's/\/var\/run/\/run/' /etc/tmpfiles.d/libselinux.conf
+
+cat /etc/selinux/dssp2-standard/contexts/x_contexts > /etc/X11/xorg.conf.d/99-selinux.conf
+
+rm -f /root/original-ks.cfg
+rm -r /root/anaconda-ks.cfg
+
+restorecon -RF /
+
+$([[ -n ${POSTINSTALL_SCRIPT} ]] && /bin/cat ${HOME}/${POSTINSTALL_SCRIPT})
+
+%end
+EOF
+
+if [ -z "$GUEST_NAME" ] ; then
+    echo "Guest name must be specified!"
+    exit
+fi
+
+if [ -z "$INSTALL_MEDIA_URL" ] ; then
+    echo "Install media URL must be specified!"
+    exit
+fi
+
+if [ -z "$VMLINUZ_MEDIA_URL" ] ; then
+    echo "VMLinuz media URL must be specified!"
+    exit
+fi
+
+if [ -z "$INITRD_MEDIA_URL" ] ; then
+    echo "InitRD media must be specified!"
+    exit
+fi
+
+if [ -z "$OS_MEDIA_URL" ] ; then
+    echo "OS media must be specified!"
+    exit
+fi
+
+if [ -z "$ROOT_PASSWD" ] ; then
+    echo "Root password must be specified!"
+    exit
+fi
+
+if [ -z "$WHEEL_NAME" ] ; then
+    echo "Wheel user identity must be specified!"
+    exit
+fi
+
+if [ -z "$WHEEL_PASSWD" ] ; then
+    echo "Wheel user password must be specified!"
+    exit
+fi
+
+if [ -z "$GUEST_IMG_SIZE" ] ; then
+    echo "Guest image size in gigabytes must be specified!"
+    exit
+fi
+
+FPASTE_KICKSTART_URL=$(printf "%s\n" "$(/bin/fpaste ${HOME}/quickqemuinstaller-${GUEST_NAME}-ks.cfg 2>/dev/null | /bin/tail -n 1 | /bin/awk -F " -> " '{ print $1 }')")
+
+if [ -n "$FPASTE_KICKSTART_URL" ]
+then
+    KICKSTART_URL=${FPASTE_KICKSTART_URL}/raw
+else
+    echo "No Fpaste kickstart URL!"
+    exit
+fi
+
+INSTALL_MEDIA=$(basename ${INSTALL_MEDIA_URL})
+
+if [ ! -f ${HOME}/${INSTALL_MEDIA} ] ; then
+    /bin/wget -P ${HOME} ${INSTALL_MEDIA_URL}
+
+    retval=`echo $?`
+
+    if ! [[ "$retval" == "0" ]]
+    then
+        echo "failed to get ${INSTALL_MEDIA}"
+        exit 1
+    fi
+fi
+
+if [ -f ${HOME}/vmlinuz ] ; then
+    /bin/rm -f ${HOME}/vmlinuz
+
+    retval=`echo $?`
+
+    if ! [[ "$retval" == "0" ]]
+    then
+        echo "failed to remove ${HOME}/vmlinuz"
+        exit 1
+    fi
+fi
+
+/bin/wget -P ${HOME} ${VMLINUZ_MEDIA_URL}
+
+retval=`echo $?`
+
+if ! [[ "$retval" == "0" ]]
+then
+    echo "failed to get ${VMLINUZ_MEDIA_URL}"
+    exit 1
+fi
+
+if [ -f ${HOME}/initrd.img ] ; then
+    /bin/rm -f ${HOME}/initrd.img
+
+    retval=`echo $?`
+
+    if ! [[ "$retval" == "0" ]]
+    then
+        echo "failed to remove ${HOME}/initrd.img"
+        exit 1
+    fi
+fi
+
+/bin/wget -P ${HOME} ${INITRD_MEDIA_URL}
+
+retval=`echo $?`
+
+if ! [[ "$retval" == "0" ]]
+then
+    echo "failed to get ${OS_INITRD_URL}"
+    exit 1
+fi
+
+/bin/qemu-img create -f raw ${HOME}/${GUEST_NAME}.raw ${GUEST_IMG_SIZE}G
+
+retval=`echo $?`
+
+if ! [[ "$retval" == "0" ]]
+then
+    echo "failed to create ${HOME}/${GUEST_NAME}.raw"
+    exit 1
+fi
+
+/bin/qemu-system-x86_64 -machine accel=kvm --enable-kvm --cdrom \
+    ${HOME}/${INSTALL_MEDIA} -boot d -drive file=${HOME}/${GUEST_NAME}.raw,driver=raw \
+    -m 2056 -net nic,model=virtio -net user -name ${GUEST_NAME} -localtime -no-reboot -serial pty \
+    -kernel vmlinuz -initrd initrd.img \
+    -append "@root@ console=tty0 console=ttyS0,115200 serial rd_NO_PLYMOUTH ks=${KICKSTART_URL}" \
+    -display none -daemonize

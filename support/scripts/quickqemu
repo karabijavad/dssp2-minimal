@@ -1,0 +1,16 @@
+#!/bin/bash
+# -*- mode: shell-script; indent-tabs-mode: nil; sh-basic-offset: 4; -*-
+
+if [[ $# == 1 ]]
+then
+        sed -i 's/\[localhost\]:31337.*//' ~/.ssh/known_hosts
+
+        /bin/test -e $1 && /bin/qemu-kvm -m 1024 -net nic,model=virtio \
+        -net user,hostfwd=tcp:127.0.0.1:31337-:22 -display none -daemonize \
+        -serial pty -smp 2 -drive format=raw,file=$1 &
+else
+        echo "expects a single parameter: path to raw image"
+        exit
+fi
+
+#EOF
