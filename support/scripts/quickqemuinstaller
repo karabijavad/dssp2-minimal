@@ -385,6 +385,6 @@ fi
 /bin/qemu-system-x86_64 -machine accel=kvm --enable-kvm --cdrom \
     ${HOME}/${INSTALL_MEDIA} -boot d -drive file=${HOME}/${GUEST_NAME}.raw,driver=raw \
     -m 2056 -net nic,model=virtio -net user -name ${GUEST_NAME} -localtime -no-reboot -serial pty \
-    -kernel vmlinuz -initrd initrd.img \
+    -kernel ${HOME}/vmlinuz -initrd ${HOME}/initrd.img \
     -append "@root@ console=tty0 console=ttyS0,115200 serial rd_NO_PLYMOUTH ks=${KICKSTART_URL}" \
     -display none -daemonize
