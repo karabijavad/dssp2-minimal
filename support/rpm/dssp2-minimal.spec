@@ -106,11 +106,12 @@ SELINUX=enforcing
 SELINUXTYPE=dssp2-minimal
 " > /etc/selinux/config
 
-    ln -sf /etc/selinux/config /etc/sysconfig/selinux
+    ln -sf ../selinux/config /etc/sysconfig/selinux
     restorecon /etc/selinux/config 2> /dev/null || :
 else
     . /etc/selinux/config
-    [ "${SELINUXTYPE}" == "dssp2-minimal" ] && selinuxenabled && semodule -B
+    semodule -B -n -s dssp2-standard
+    [ "${SELINUXTYPE}" == "dssp2-standard" ] && selinuxenabled && load_policy
 fi
 exit 0
 
@@ -126,7 +127,8 @@ fi
 exit 0
 
 %triggerin -- pcre
-selinuxenabled && semodule -nB
+selinuxenabled && semodule -B -n
+exit 0
 
 %changelog
 * Fri Jan 6 2017 Dominick Grift <dac.override@gmail.com> - 0.1-%(date +%Y%%m%%d)git%{shortcommit0}
