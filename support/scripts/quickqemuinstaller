@@ -255,13 +255,13 @@ echo "usepasswd = false" >> /etc/selinux/semanage.conf
 cp /usr/lib/tmpfiles.d/pam.conf /etc/tmpfiles.d/
 sed -i 's/\/var\/run/\/run/' /etc/tmpfiles.d/pam.conf
 
+cp /usr/lib/tmpfiles.d/sudo.conf /etc/tmpfiles.d/
+sed -i 's/\/var\/run/\/run/' /etc/tmpfiles.d/sudo.conf
+
 cp /usr/lib/tmpfiles.d/libselinux.conf /etc/tmpfiles.d/
 sed -i 's/\/var\/run/\/run/' /etc/tmpfiles.d/libselinux.conf
 
 cat /etc/selinux/dssp2-standard/contexts/x_contexts > /etc/X11/xorg.conf.d/99-selinux.conf
-
-rm -f /root/original-ks.cfg
-rm -r /root/anaconda-ks.cfg
 
 restorecon -RF /
 
