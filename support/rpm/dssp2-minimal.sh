@@ -17,7 +17,7 @@ __remove_rpmbuild_dir ()
     /bin/rm -rf ${HOME}/rpmbuild
 }
 
-trap '__remove_rpmbuild_dir' ERR
+trap __remove_rpmbuild_dir ERR
 
 __buildit ()
 {
