@@ -202,7 +202,7 @@ autopart --nolvm
 clearpart --all --initlabel
 shutdown
 
-repo --name=dssp2 --install --baseurl=http://tfirg.undo.it/dssp2/
+repo --name=dssp2 --baseurl=http://tfirg.undo.it/dssp2/
 
 %packages --ignoremissing --nocore
 basesystem
@@ -214,6 +214,7 @@ kernel
 systemd-udev
 binutils
 qemu-guest-agent
+dssp2-repos
 dssp2-minimal
 dnf
 less
