@@ -207,6 +207,7 @@ repo --name=dssp2 --baseurl=http://tfirg.undo.it/dssp2/
 %packages --ignoremissing --nocore
 basesystem
 install
+kbd
 systemd
 fedora-release
 passwd
