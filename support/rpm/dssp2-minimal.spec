@@ -3,8 +3,8 @@
 %global commit1 ...
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
-%define POLICYVER 30
-%define POLICYCOREUTILSVER 2.5
+%define POLICYVER 31
+%define POLICYCOREUTILSVER 2.6
 
 Summary: Defensec SELinux Security Policy Version 2
 Name: dssp2
