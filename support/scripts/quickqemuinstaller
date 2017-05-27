@@ -237,7 +237,7 @@ setools-console
 nano
 dnf-plugins-core
 -selinux-policy
--selinux-policy-target
+-selinux-policy-targeted
 
 %end
 
