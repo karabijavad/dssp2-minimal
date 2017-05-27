@@ -202,7 +202,8 @@ autopart --nolvm
 clearpart --all --initlabel
 shutdown
 
-repo --name=dssp2 --baseurl=http://tfirg.undo.it/dssp2/
+repo --name="Copr repo for selinux-fedora owned by plautrba" --baseurl=https://copr-be.cloud.fedoraproject.org/results/plautrba/selinux-fedora/fedora-26-x86_64/
+repo --name=dssp2 --baseurl=https://tfirg.undo.it/dssp2/
 
 %packages --ignoremissing --nocore
 basesystem
@@ -232,6 +233,9 @@ sudo
 glibc
 bash
 openssh-server
+setools-console
+nano
+dnf-plugins-core
 -selinux-policy
 -selinux-policy-target
 
@@ -240,6 +244,8 @@ openssh-server
 %post --log=/root/ks-error.log
 
 chmod u+w /root
+
+dnf copr enable plautrba/selinux-fedora -y
 
 systemctl enable systemd-resolved systemd-networkd
 
