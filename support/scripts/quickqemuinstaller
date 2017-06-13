@@ -19,10 +19,10 @@ help()
     Required parameters:
 
     -G  : Guest name (ex. myfedora)
-    -M  : Install media URL (ex. http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Alpha/Everything/x86_64/iso/Fedora-Everything-netinst-x86_64-26-Alpha-1.7.iso)
-    -V  : VMLinuz media URL (ex. http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Alpha/Everything/x86_64/os/isolinux/vmlinuz)
-    -P  : InitRD media URL (ex. http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Alpha/Everything/x86_64/os/isolinux/initrd.img)
-    -O  : OS media URL (ex. http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Alpha/Everything/x86_64/os/)
+    -M  : Install media URL (ex. http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Beta/Everything/x86_64/iso/Fedora-Everything-netinst-x86_64-26_Beta-1.4.iso)
+    -V  : VMLinuz media URL (ex. http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Beta/Everything/x86_64/os/isolinux/vmlinuz)
+    -P  : InitRD media URL (ex. http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Beta/Everything/x86_64/os/isolinux/initrd.img)
+    -O  : OS media URL (ex. http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Beta/Everything/x86_64/os/)
     -R  : Root password (ex. abc123)
     -I  : Wheel user identity (ex. kcinimod)
     -W  : Wheel user password (ex. abc123)
@@ -34,10 +34,10 @@ help()
     -Z  : Kickstart post-installation script to include
 
     Example: $0 -G myfedora \\
-            -M http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Alpha/Everything/x86_64/iso/Fedora-Everything-netinst-x86_64-26-Alpha-1.7.iso \\
-            -V http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Alpha/Everything/x86_64/os/isolinux/vmlinuz \\
-            -P http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Alpha/Everything/x86_64/os/isolinux/initrd.img \\
-            -O http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Alpha/Everything/x86_64/os/ \\
+            -M http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Beta/Everything/x86_64/iso/Fedora-Everything-netinst-x86_64-26_Beta-1.4.iso \\
+            -V http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Beta/Everything/x86_64/os/isolinux/vmlinuz \\
+            -P http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Beta/Everything/x86_64/os/isolinux/initrd.img \\
+            -O http://mirror.nl.leaseweb.net/fedora/linux/releases/test/26_Beta/Everything/x86_64/os/ \\
             -R abc123 -I ${USER} -W abc123 -S 10
 
     Just a note to self:
